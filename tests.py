@@ -11,7 +11,5 @@ class TestTwilioMicroservice(unittest.TestCase):
 
 # TODO look up mocking and stubbing
 
-
-
 if __name__ == '__main__':
     unittest.main()
