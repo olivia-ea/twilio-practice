@@ -114,11 +114,9 @@ IN PROGRESS
 ### New things I learned:
 IN PROGRESS
 
-### uture enhancements:
+### Future enhancements:
 IN PROGRESS
 
 
 ### Feedback
 IN PROGRESS
-
-
