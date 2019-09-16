@@ -1,29 +1,35 @@
-from flask import Flask
+from flask import Flask, request
 import requests
 from twilio.rest import Client
 
+# TODO make credentials environment vars
 twilio_phone_number = '+15106171282'
+personal_phone_number = '+15106487309'
 twilio_account_sid = 'AC3050c3bf79b5dd9f74ea488e99f06297'
 twilio_auth_token = '994dbb8e2b8e10188a7fdf1228d57926'
 
 app = Flask(__name__)
 
-@app.route('/send_sms') # /messages/ needs to be POST not get (to use headers and format message)
+# @app.route is a route decorator that tells Flask that the URL should trigger a specific function
+# also route decorator binds function to URL
+@app.route('/messages', methods=['POST']) # /messages/ needs to be POST not get (to use headers and format message)
 def send_message():
     client = Client(twilio_account_sid, twilio_auth_token)
-    mock = Mock(client)
+    request_body = request.get_json()   # test using postman => run server, post request 'http://localhost:5000/messages', headers => key = Content-Type, value = application/json, body => select raw and put in json and select json as format type
     message = client.messages.create(
-                              body='Hi there!',
+                              body=request_body['body'],
                               from_=twilio_phone_number,
-                              to='+15106487309'
+                              to=personal_phone_number
                             )
+    print(message.body)
     sid_dict = {}
     sid_dict['sid'] = message.sid
+    sid_dict['message_body'] = message.body
     print(sid_dict)
     return sid_dict
 
-@app.route('/read_sms/<id>') # /message/<message_id>
-def read_message(id):
+@app.route('/messages/<message_id>') # /message/<message_id>
+def read_message(message_id):
     # json to include account sid, api verson, body, date created
 
     client = Client(twilio_account_sid, twilio_auth_token)
@@ -37,7 +43,7 @@ def read_message(id):
     message_dict['date_created'] = message.date_created
     return message_dict
 
-@app.route('/filter_sent_to/<phone_number>')
+@app.route('/filterbysentto/<phone_number>')
 def filter_sent_to(phone_number):
     client = Client(twilio_account_sid, twilio_auth_token)
 
