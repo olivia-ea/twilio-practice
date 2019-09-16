@@ -1,5 +1,4 @@
 from flask import Flask, request
-import requests
 from twilio.rest import Client
 
 # TODO make credentials environment vars
@@ -17,47 +16,61 @@ def send_message():
     client = Client(twilio_account_sid, twilio_auth_token)
     request_body = request.get_json()   # test using postman => run server, post request 'http://localhost:5000/messages', headers => key = Content-Type, value = application/json, body => select raw and put in json and select json as format type
     message = client.messages.create(
-                              body=request_body['body'],
+                              body=request_body['message_body'],
                               from_=twilio_phone_number,
-                              to=personal_phone_number
-                            )
-    print(message.body)
-    sid_dict = {}
-    sid_dict['sid'] = message.sid
-    sid_dict['message_body'] = message.body
-    print(sid_dict)
-    return sid_dict
+                              to=request_body['phone_number']
+                              )
+    message_dict = {}
+    message_dict['message_sid'] = message.sid
+    message_dict['message_to'] = message.to
+    message_dict['message_from'] = message.from_
+    message_dict['message_body'] = message.body
+    return message_dict
 
-@app.route('/messages/<message_id>') # /message/<message_id>
+@app.route('/messages/<message_id>', methods=['GET']) # /message/<message_id>
 def read_message(message_id):
-    # json to include account sid, api verson, body, date created
-
     client = Client(twilio_account_sid, twilio_auth_token)
-
-    message = client.messages(id).fetch()
-
+    message = client.messages(message_id).fetch()
     message_dict = {}
     message_dict['account_sid'] = message.account_sid
     message_dict['api_version'] = message.api_version
-    message_dict['body'] = message.body
+    message_dict['message_body'] = message.body
     message_dict['date_created'] = message.date_created
     return message_dict
 
-@app.route('/filterbysentto/<phone_number>')
-def filter_sent_to(phone_number):
+@app.route('/filter_by', methods=['GET'])
+def filter_all():
     client = Client(twilio_account_sid, twilio_auth_token)
-
-    messages = client.messages.list(
-        from_=twilio_phone_number,
-        to=phone_number,
-        limit=20
-    )
-
+    messages = client.messages.list(limit=100)
     filtered_dict = {}
-
     for message in messages:
         filtered_dict[message.sid] = message.body
+    return filtered_dict
 
+@app.route('/filter_by/sent/<phone_number>', methods=['GET'])
+def filter_sent_to(phone_number):
+    client = Client(twilio_account_sid, twilio_auth_token)
+    messages = client.messages.list(limit=100)
+    phone_number = '+1' + str(phone_number)
+    filtered_dict = {}
+    for message in messages:
+        if message.to == phone_number:
+            filtered_dict['message_sid'] = message.sid
+            filtered_dict['message_sent_to'] = message.to
+            filtered_dict['message_body'] = message.body
+    return filtered_dict
+
+@app.route('/filter_by/from/<phone_number>', methods=['GET'])
+def filter_from(phone_number):
+    client = Client(twilio_account_sid, twilio_auth_token)
+    messages = client.messages.list(limit=20)
+    phone_number = '+1' + str(phone_number)
+    filtered_dict = {}
+    for message in messages:
+        if message.from_ == phone_number:
+            filtered_dict['message_sid'] = message.sid
+            filtered_dict['message_sent_from'] = message.from_
+            filtered_dict['message_body'] = message.body
     return filtered_dict
 
 if __name__ == '__main__':
