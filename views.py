@@ -6,11 +6,11 @@ app = Flask(__name__)
 
 @app.route('/messages', methods=['POST']) # /messages/ needs to be POST not get (to use headers and format message)
 def send_message():
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     request_body = request.get_json()   # test using postman => run server, post request 'http://localhost:5000/messages', headers => key = Content-Type, value = application/json, body => select raw and put in json and select json as format type
     message = client.messages.create(
                               body=request_body['message_body'],
-                              from_=twilio_phone_number,
+                              from_=TWILIO_PHONE_NUMBER,
                               to=request_body['phone_number']
                               )
     message_dict = {}
@@ -22,7 +22,7 @@ def send_message():
 
 @app.route('/messages/<message_id>', methods=['GET']) # /message/<message_id>
 def read_message(message_id):
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     message = client.messages(message_id).fetch()
     message_dict = {}
     message_dict['account_sid'] = message.account_sid
@@ -33,16 +33,19 @@ def read_message(message_id):
 
 @app.route('/filter_by', methods=['GET'])
 def filter_all():
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     messages = client.messages.list(limit=100)
     filtered_dict = {}
     for message in messages:
-        filtered_dict[message.sid] = message.body
+        filtered_dict['message_sid'] = message.sid
+        filtered_dict['message_sent_to'] = message.to
+        filtered_dict['message_sent_from'] = message.from_
+        filtered_dict['message_body'] = message.body
     return filtered_dict
 
 @app.route('/filter_by/sent/<phone_number>', methods=['GET'])
 def filter_sent_to(phone_number):
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     messages = client.messages.list(limit=100)
     phone_number = '+1' + str(phone_number)
     filtered_dict = {}
@@ -55,7 +58,7 @@ def filter_sent_to(phone_number):
 
 @app.route('/filter_by/from/<phone_number>', methods=['GET'])
 def filter_from(phone_number):
-    client = Client(twilio_account_sid, twilio_auth_token)
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     messages = client.messages.list(limit=20)
     phone_number = '+1' + str(phone_number)
     filtered_dict = {}
