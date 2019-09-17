@@ -74,9 +74,7 @@ Open localhost:5000 on browser.
 * When each endpoint is hit, the request runs the respective get/post request by first making an API call to the Twilio API then casting the response into json. The return statement then parses through the json to give the desired format.
 
 ### testing.py
-* Contains unit testing for above files. There is an individual function to test each Smartcar API endpoint using assert statements. The valid id tests are checking for a 200 status code and if a response is present whereas the invalid id tests are checking for a 404 status code.
-* Addition: Added more assert statements to match expected json responses.
-
+* Contains unit testing for above files. There is an individual function to test each endpoint using assert statements. The valid id tests are checking for a 200 status code and if a response is present whereas the invalid id tests are checking for a 404 status code.
 
 ## Post Request
 
@@ -91,7 +89,7 @@ $ python3 server.py
 2. Select "Post" request and enter 'http://localhost:5000/messages'
 3. Select the headers tab and for key put 'Content-Type' and for value put 'application/json'
 4. Switch to the body tab and select raw with JSON(application/json) format
-5. Input custom data in form like so: {'message_body': <custom message>, 'phone_number': <custom phone number}
+5. Input custom data in form like so: {'message_body': <custom_message>, 'phone_number': <custom_phone_number>}
 6. Press send
 
 ## Testing
