@@ -127,3 +127,11 @@ IN PROGRESS
 |  /filter_by/ | GET   | Displays all the messages from the registered Twilio account.    | Returns the all the registered user's message SIDs, phone number of messages sent and received and message contents.    |
 |  /filter_by/sent/<phone_number> | GET   | Given a phone number, displays all the messages that were sent to the specified phone numnber.    | Returns the filtered messages' SID, phone number sent to and message contents.    |
 | /filter_by/from/<phone_number>   | GET | Given a phone number, displays all the messages that were sent from the specified phone numnber.    | Returns the filtered messages' SID, phone number sent from and message contents. \| |
+
+* Optional vs required params
+    * Created more endpoints with optional params
+
+* Store app credentials securely
+    * Stored credentials as environment variables
+
+* More error handling
