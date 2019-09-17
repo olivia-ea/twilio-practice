@@ -121,7 +121,7 @@ IN PROGRESS
     * Simplified the endpoints to make routing more organized and RESTful.
 
 | URL      | HTTP verb     | Action     | Output     |
-| :------------- | :----------: | -----------: |
+| :------------- | :----------: | :----------: | -----------: |
 |  /messages | POST   | Creates a new custom message to a custom phone number from a Twilio phone number.    | Returns the message SID, the phone number of the received message, the phone number of the sender and the message body.   |
 |  /messages/<message_id> | GET   | Given a specific message SID, displays the message content.    | Returns the message SID, API version, message contents, and date created.    |
 |  /filter_by/ | GET   | Displays all the messages from the registered Twilio account.    | Returns the all the registered user's message SIDs, phone number of messages sent and received and message contents.    |
