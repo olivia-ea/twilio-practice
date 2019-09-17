@@ -4,10 +4,10 @@ from constants import *
 
 app = Flask(__name__)
 
-@app.route('/messages', methods=['POST']) # /messages/ needs to be POST not get (to use headers and format message)
+@app.route('/messages', methods=['POST'])
 def send_message():
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    request_body = request.get_json()   # test using postman => run server, post request 'http://localhost:5000/messages', headers => key = Content-Type, value = application/json, body => select raw and put in json and select json as format type
+    request_body = request.get_json()
     message = client.messages.create(
                               body=request_body['message_body'],
                               from_=TWILIO_PHONE_NUMBER,
@@ -20,7 +20,7 @@ def send_message():
     message_dict['message_body'] = message.body
     return message_dict
 
-@app.route('/messages/<message_id>', methods=['GET']) # /message/<message_id>
+@app.route('/messages/<message_id>', methods=['GET'])
 def read_message(message_id):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     message = client.messages(message_id).fetch()
@@ -59,7 +59,7 @@ def filter_sent_to(phone_number):
 @app.route('/filter_by/from/<phone_number>', methods=['GET'])
 def filter_from(phone_number):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    messages = client.messages.list(limit=20)
+    messages = client.messages.list(limit=100)
     phone_number = '+1' + str(phone_number)
     filtered_dict = {}
     for message in messages:
