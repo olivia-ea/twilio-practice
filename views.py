@@ -1,6 +1,5 @@
 from flask import Flask, request
 from constants import *
-from twilio.base.exceptions import TwilioRestException
 
 app = Flask(__name__)
 
@@ -44,36 +43,42 @@ def view_message_by_id(message_id):
 @app.route('/filter_by', methods=['GET'])
 def view_all_messages():
     messages = CLIENT.messages.list(limit=100)
-    filtered_dict = {}
+    search_results = {'search_results': []}
     for message in messages:
-        filtered_dict['message_sid'] = message.sid
-        filtered_dict['message_sent_to'] = message.to
-        filtered_dict['message_sent_from'] = message.from_
-        filtered_dict['message_body'] = message.body
-    return filtered_dict
+        message_result = {}
+        message_result['message_sid'] = message.sid
+        message_result['message_sent_to'] = message.to
+        message_result['message_sent_from'] = message.from_
+        message_result['message_body'] = message.body
+        search_results['search_results'].append(message_result)
+    return search_results
 
 @app.route('/filter_by/sent/<phone_number>', methods=['GET'])
 def filter_messages_by_sent_to(phone_number):
     messages = CLIENT.messages.list(limit=100)
     phone_number = '+1' + str(phone_number)
-    filtered_dict = {}
+    search_results = {'search_results': []}
     for message in messages:
         if message.to == phone_number:
-            filtered_dict['message_sid'] = message.sid
-            filtered_dict['message_sent_to'] = message.to
-            filtered_dict['message_body'] = message.body
-    return filtered_dict
+            message_result = {}
+            message_result['message_sid'] = message.sid
+            message_result['message_sent_to'] = message.to
+            message_result['message_body'] = message.body
+            search_results['search_results'].append(message_result)
+    return search_results
 
 @app.route('/filter_by/from/<phone_number>', methods=['GET'])
 def filter_messages_by_from(phone_number):
     messages = CLIENT.messages.list(limit=100)
     phone_number = '+1' + str(phone_number)
-    filtered_dict = {}
+    search_results = {'search_results': []}
     for message in messages:
         if message.from_ == phone_number:
-            filtered_dict['message_sid'] = message.sid
-            filtered_dict['message_sent_from'] = message.from_
-            filtered_dict['message_body'] = message.body
-    return filtered_dict
+            message_result = {}
+            message_result['message_sid'] = message.sid
+            message_result['message_sent_from'] = message.from_
+            message_result['message_body'] = message.body
+            search_results['search_results'].append(message_result)
+    return search_results
 
 # TODO add error handling to check if vaild phone number for /messages and /filter_by urls
